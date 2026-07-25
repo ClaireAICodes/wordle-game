@@ -14994,7 +14994,7 @@ function setupEventListeners() {
 }
 
 function getDailyPuzzleIndex() {
-    const epoch = new Date('2021-06-19'); // Wordle #1 launch date
+    const epoch = new Date('1989-02-09'); // Master Phil's birthday ♥
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const diffDays = Math.floor((today - epoch) / (1000 * 60 * 60 * 24));
