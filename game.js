@@ -246,16 +246,16 @@ function createGrid() {
 
 function createKeyboard() {
     const rows = [
-        'QWERTYUIOP',
-        'ASDFGHJKL',
-        'ENTERZXCVBNM⌫'
+        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+        ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
     ];
 
     keyboard.innerHTML = '';
     rows.forEach((rowKeys, rowIndex) => {
         const row = document.createElement('div');
         row.className = 'keyboard-row';
-        [...rowKeys].forEach(key => {
+        rowKeys.forEach(key => {
             const btn = document.createElement('button');
             btn.className = 'key';
             btn.dataset.key = key;
