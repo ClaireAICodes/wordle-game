@@ -1,0 +1,361 @@
+/* Wordle Clone Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --tile-size: 62px;
+    --tile-gap: 4px;
+    --correct: #6aaa64;
+    --present: #c9b458;
+    --absent: #787c7e;
+    --bg: #121213;
+    --fg: #ffffff;
+    --border: #3a3a3c;
+    --key-bg: #818384;
+    --key-hover: #939598;
+}
+
+body {
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    color: #aaa;
+    font-size: 1rem;
+    margin-top: 4px;
+}
+
+/* Controls */
+.controls {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.puzzle-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.puzzle-selector label {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.puzzle-selector input {
+    width: 80px;
+    padding: 8px 12px;
+    background: #2a2a2c;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--fg);
+    font-size: 1rem;
+    text-align: center;
+}
+
+.puzzle-selector input:focus {
+    outline: none;
+    border-color: #5a5a5c;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.05s;
+    font-family: inherit;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button.primary {
+    background: var(--correct);
+    color: white;
+}
+
+button.primary:hover {
+    background: #5a9a54;
+}
+
+button:not(.primary):not(.share-btn) {
+    background: var(--key-bg);
+    color: white;
+}
+
+button:not(.primary):not(.share-btn):hover {
+    background: var(--key-hover);
+}
+
+.message {
+    min-height: 24px;
+    font-size: 1rem;
+    text-align: center;
+    color: #ccc;
+    margin: 4px 0;
+}
+
+/* Grid */
+.grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--tile-gap);
+    margin: 8px 0;
+}
+
+.row {
+    display: flex;
+    gap: var(--tile-gap);
+}
+
+.tile {
+    width: var(--tile-size);
+    height: var(--tile-size);
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--fg);
+    transition: all 0.2s ease;
+}
+
+.tile.filled {
+    border-color: #565758;
+}
+
+.tile.flip {
+    animation: flip 0.4s ease forwards;
+}
+
+@keyframes flip {
+    0% { transform: rotateX(0); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0); }
+}
+
+.tile.correct {
+    background: var(--correct);
+    border-color: var(--correct);
+}
+
+.tile.present {
+    background: var(--present);
+    border-color: var(--present);
+}
+
+.tile.absent {
+    background: var(--absent);
+    border-color: var(--absent);
+}
+
+/* Keyboard */
+.keyboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    user-select: none;
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 4px;
+}
+
+.key {
+    min-width: 40px;
+    height: 58px;
+    padding: 0 8px;
+    background: var(--key-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.key.wide {
+    min-width: 64px;
+    padding: 0 12px;
+}
+
+.key:hover {
+    background: var(--key-hover);
+}
+
+.key:active {
+    transform: scale(0.95);
+}
+
+.key.correct { background: var(--correct); }
+.key.present { background: var(--present); }
+.key.absent { background: var(--absent); }
+
+/* Stats */
+.stats {
+    width: 100%;
+    max-width: 400px;
+    background: #1e1e1f;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 16px;
+}
+
+.stats h3 {
+    text-align: center;
+    margin-bottom: 16px;
+    font-size: 1.25rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.guess-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.guess-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.guess-number {
+    width: 24px;
+    text-align: right;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+}
+
+.guess-bar {
+    flex: 1;
+    height: 12px;
+    background: #3a3a3c;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.guess-fill {
+    height: 100%;
+    background: var(--correct);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.guess-count {
+    width: 36px;
+    text-align: right;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Share Button */
+.share-btn-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.share-btn {
+    background: var(--correct);
+    color: white;
+    padding: 12px 32px;
+    font-size: 1rem;
+}
+
+.share-btn:hover {
+    background: #5a9a54;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    :root {
+        --tile-size: 56px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .key {
+        height: 50px;
+        min-width: 34px;
+        font-size: 0.9rem;
+    }
+    
+    .key.wide {
+        min-width: 56px;
+    }
+}

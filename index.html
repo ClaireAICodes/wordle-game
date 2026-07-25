@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle - Daily Word Puzzle</title>
+    <meta name="description" content="A simple Wordle clone with puzzle IDs for sharing with friends">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WORDLE</h1>
+            <p class="subtitle">Guess the WORDLE in 6 tries</p>
+        </header>
+
+        <div class="controls">
+            <div class="puzzle-selector">
+                <label for="puzzle-id">Puzzle ID:</label>
+                <input type="number" id="puzzle-id" min="1" max="2315" placeholder="1-2315">
+                <button id="id-btn" class="btn">Load</button>
+            </div>
+            <div class="game-controls">
+                <button id="random-btn" class="btn btn-primary">Random</button>
+                <button id="new-game-btn" class="btn">New Game</button>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="grid" class="grid" role="grid" aria-label="Wordle game grid"></div>
+
+        <div class="keyboard" id="keyboard" role="application" aria-label="On-screen keyboard"></div>
+
+        <div id="stats" class="stats" style="display: none;">
+            <h2>Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <span id="stat-played" class="stat-value">0</span>
+                    <span class="stat-label">Played</span>
+                </div>
+                <div class="stat">
+                    <span id="stat-win" class="stat-value">0%</span>
+                    <span class="stat-label">Win %</span>
+                </div>
+                <div class="stat">
+                    <span id="stat-streak" class="stat-value">0</span>
+                    <span class="stat-label">Current Streak</span>
+                </div>
+                <div class="stat">
+                    <span id="stat-max" class="stat-value">0</span>
+                    <span class="stat-label">Max Streak</span>
+                </div>
+            </div>
+            <div id="guess-dist" class="guess-distribution"></div>
+            <button id="share-btn" class="btn btn-secondary" style="display: none;">Share</button>
+        </div>
+
+        <footer>
+            <p>Based on <a href="https://en.wikipedia.org/wiki/Wordle" target="_blank">Wordle</a> by Josh Wardle</p>
+            <p>Words from <a href="https://github.com/seanpatlan/wordle-words" target="_blank">wordle-words</a></p>
+        </footer>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Clone</title>
+    <style>
+        :root {
+            --bg-color: #121213;
+            --text-color: #ffffff;
+            --tile-border: #3a3a3c;
+            --correct: #538d4e;
+            --present: #b59f3b;
+            --absent: #3a3a3c;
+            --border-highlight: #565758;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 { margin-bottom: 20px; }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #grid {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            grid-gap: 5px;
+            padding: 10px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-gap: 5px;
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--tile-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .tile[data-state="correct"] { background-color: var(--correct); border-color: var(--correct); }
+        .tile[data-state="present"] { background-color: var(--present); border-color: var(--present); }
+        .tile[data-state="absent"] { background-color: var(--absent); border-color: var(--absent); }
+        .tile[data-state="border"] { border-color: var(--border-highlight); }
+
+        #controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #2c2c2e;
+            color: white;
+            border: 1px solid #555;
+            padding: 10px 20px;
+        }
+
+        button:hover { background-color: #444; }
+
+        #message {
+            height: 30px;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wordle Clone</h1>
+    <div id="game-container">
+        <div id="grid"></div>
+        <div id="message"></div>
+        <div id="controls">
+            <input type="text" id="puzzle-id" placeholder="Enter Puzzle ID (Optional)" maxlength="10">
+            <button id="new-game-btn">New Game (Random)</button>
+        </div>
+    </div>
+
+    <script>
+        const words = ["about", "apple", "beach", "bread", "brush", "carry", "chair", "chest", "clean", "clock", "cloud", "coast", "could", "count", "court", "cover", "crack", "craft", "cream", "crept", "creek", "cried", "crime", "crisp", "cross", "crowd", "crown", "crude", "cruel", "crumb", "crush", "crust", "crypt", "cubic", "cumin", "curly", "curry", "curse", "curve", "curvy", "cutie", "cyber", "cycle", "cynic", "daily", "dairy", "daisy", "dally", "dance", "dandy", "datum", "daunt", "dealt", "death", "debar", "debit", "debug", "debut", "decal", "decay", "decor", "decoy", "decry", "defer", "deign", "deity", "delay", "delta", "delve", "demon", "demur", "denim", "dense", "depot", "depth", "derby", "deter", "detox", "deuce", "devil", "diary", "dicey", "digit", "dilly", "dimly", "diner", "dingo", "dingy", "diode", "dirge", "dirty", "disco", "ditch", "ditto", "ditty", "diver", "dizzy", "dodge", "dodgy", "dogma", "doing", "dolly", "donor", "donut", "dopey", "doubt", "dough", "dowdy", "dowel", "downy", "dowry", "dozen", "draft", "drain", "drake", "drama", "drank", "drape", "drawl", "drawn", "dread", "dream", "dress", "dried", "drier", "drift", "drill", "drink", "drive", "droit", "droll", "drone", "drool", "droop", "dross", "drove", "drown", "druid", "drunk", "dryer", "dryly", "duchy", "dully", "dummy", "dumpy", "dunce", "dusky", "dusty", "dutch", "duvet", "dwarf", "dwell", "dwelt", "dying", "eager", "eagle", "early", "earth", "easel", "eaten", "eater", "ebony", "eclat", "edict", "edify", "eerie", "egret", "eight", "eject", "eking", "elate", "elbow", "elder", "elect", "elegy", "elfin", "elide", "elite", "elope", "elude", "email", "embed", "ember", "emcee", "empty", "enact", "endow", "enema", "enemy", "enjoy", "ennui", "ensue", "enter", "entry", "envoy", "epoch", "epoxy", "equal", "equip", "erase", "erect", "erode", "error", "erupt", "essay", "ester", "ether", "ethic", "ethos", "etude", "evade", "event", "every", "evict", "evoke", "exact", "exalt", "excel", "exert", "exile", "exist", "expel", "extol", "extra", "exult", "eying", "fable", "facet", "faint", "fairy", "faith", "false", "fancy", "fanny", "farce", "fatal", "fatty", "fault", "fauna", "favor", "feast", "fecal", "feign", "fella", "felon", "femme", "femur", "fence", "feral", "ferry", "fetal", "fetch", "fetid", "fetus", "fever", "fewer", "fiber", "ficus", "field", "fiend", "fiery", "fifth", "fifty", "fight", "filer", "filet", "filly", "filmy", "filth", "final", "finch", "finer", "first", "fishy", "fixer", "fizzy", "flair", "flask", "fleck", "fleet", "flesh", "flick", "flier", "float", "flock", "flood", "floor", "flora", "floss", "flour", "flout", "flown", "fluff", "fluid", "fluke", "flume", "flung", "focal", "foggy", "folio", "folly", "forte", "frost", "giant", "giddy", "gipsy", "girly", "girth", "given", "giver", "glade", "gland", "glare", "glass", "glaze", "gleam", "glean", "glide", "glory", "gloss", "globe", "gloom", "gloat", "pluck", "stiff", "flood", "verse", "awake", "rocky", "march", "fault", "swift", "faint", "civil", "ghost", "feast", "blade", "limit", "germs", "reads", "ducks", "dairy", "worst", "gifts", "lists", "stops", "rapid", "brick", "claws", "beads", "beast", "skirt", "cakes", "lions", "frogs", "tries", "nerve", "grand", "armed", "treat", "honey", "moist", "legal", "penny", "crown", "shock", "taxes", "sixty", "altar", "pulls", "sport", "drums", "talks", "dying", "dates", "drank", "blows", "lever", "wages", "proof", "drugs", "tanks", "sings", "tails", "pause", "herds", "arose", "hated", "clues", "novel", "shame", "burnt", "races", "flash", "weary", "heels", "token", "coats", "spare", "shiny", "alarm", "dimes", "sixth", "clerk", "mercy", "sunny", "guest", "float", "shone", "pipes", "worms", "bills", "sweat", "suits", "smart", "upset", "rains", "sandy", "rainy", "parks", "sadly", "fancy", "rider", "unity", "bunch", "rolls", "crash", "craft", "newly", "gates", "hatch", "paths", "funds", "wider", "grace", "grave", "tides", "admit", "shift", "sails", "pupil", "tiger", "angel", "cruel", "agent", "drama", "urged", "patch", "nests", "vital", "sword", "blame", "weeds", "screw", "vocal", "bacon", "chalk", "cargo", "crazy", "acted", "goats", "arise", "witch", "loves", "queer", "dwell", "backs", "ropes", "shots", "merry", "phone", "cheek", "peaks", "ideal", "beard", "eagle", "creek", "cries", "ashes", "stall", "yield", "mayor", "opens", "input", "fleet", "tooth", "cubic", "wives", "burns", "poets", "apron", "spear", "organ", "cliff", "stamp", "paste", "rural", "baked", "chase", "slice", "slant", "knock", "noisy", "sorts", "stays", "wiped", "blown", "piled", "clubs", "cheer", "widow", "twist", "tenth", "hides", "comma", "sweep", "spoon", "stern", "crept", "maple", "deeds", "rides", "muddy", "crime", "jelly", "ridge", "drift", "dusty", "devil", "tempo", "humor", "sends", "steal", "tents", "waist", "roses", "reign", "noble", "cheap", "dense", "linen", "geese", "woven", "posts", "hired", "wrath", "salad", "bowed", "tires", "shark", "belts", "grasp", "blast", "polar", "fungi", "tends", "pearl", "loads", "jokes", "veins", "frost", "hears", "loses", "hosts", "diver", "phase", "toads", "alert", "tasks", "seams", "coral", "focus", "naked", "puppy", "jumps", "spoil", "quart", "macro", "fears", "flung", "spark", "vivid", "brook", "steer", "spray", "decay", "ports", "socks", "urban", "goals", "grant", "minus", "films", "tunes", "shaft", "firms", "skies", "bride", "wreck", "flock", "stare", "hobby", "bonds", "dared", "faded", "thief", "crude", "pants", "flute", "votes", "tonal", "radar", "wells", "skull", "hairs", "argue", "wears", "dolls", "voted", "caves", "cared", "broom", "scent", "panel", "fairy", "olive", "bends", "prism", "lamps", "cable", "peach", "ruins", "rally", "schwa", "lambs", "sells", "cools", "draft", "charm", "limbs", "brake", "gazed", "cubes", "delay", "beams", "fetch", "ranks", "array", "harsh", "camel", "vines", "picks", "naval", "purse", "rigid", "crawl", "toast", "soils", "sauce", "basin", "ponds", "twins", "wrist", "fluid", "pools", "brand", "stalk", "robot", "reeds", "hoofs", "buses", "sheer", "grief", "bloom", "dwelt", "melts", "risen", "flags", "knelt", "fiber", "roofs", "freed", "armor", "piles", "aimed", "algae", "twigs", "lemon", "ditch", "drunk", "rests", "chill", "slain", "panic", "cords", "tuned", "crisp", "ledge", "dived", "swamp", "clung", "stole", "molds", "yarns", "liver", "gauge", "breed", "stool", "gulls", "awoke", "gross", "diary", "rails", "belly", "trend", "flask", "stake", "fried", "draws", "actor", "handy", "bowls", "haste", "scope", "deals", "knots", "moons", "essay", "thump", "hangs", "bliss", "dealt", "gains", "bombs", "clown", "palms", "cones", "roast", "tidal", "bored", "chant", "acids", "dough", "camps", "swore", "lover", "hooks", "males", "cocoa", "punch", "award", "reins", "ninth", "noses", "links", "drain", "fills", "nylon", "lunar", "pulse", "flown", "elbow", "fatal", "sites", "moths", "meats", "foxes", "mined", "attic", "fiery", "mount", "usage", "swear", "snowy", "rusty", "scare", "traps", "relax", "react", "valid", "robin", "cease", "gills", "prior", "safer", "polio", "loyal", "swell", "salty", "marsh", "vague", "weave", "mound", "seals", "mules", "virus", "scout", "acute", "windy", "stout", "folds", "seize", "hilly", "joins", "pluck", "stack", "lords", "dunes", "burro", "hawks", "trout", "feeds", "henge", "unsay", "liers", "piing", "weald", "sexed", "folic", "poxed", "cunts", "anile", "kiths", "becks", "tatty", "plena", "rebar", "abled", "toyer", "attar", "teaks", "aioli", "awing", "anent", "feces", "redip", "wists", "prats", "mesne", "muter", "smurf", "owest", "bahts", "lossy", "ftped", "hunky", "hoers", "slier", "sicks", "fatly", "delft", "hiver", "himbo", "pengo", "busks", "loxes", "zonks", "ilium", "aport", "ikons", "mulct", "reeve", "civvy", "canna", "barfy", "kaiak", "scudo", "knout", "gaper", "bhang", "pease", "uteri", "lases", "paten", "rasae", "axels", "stoas", "ombre", "styli", "gunky", "hazer", "kenaf", "ahoys", "ammos", "weeny", "urger", "kudzu", "paren", "bolos", "fetor", "nitty", "techy", "lieth", "somas", "darky", "villi", "gluon", "janes", "cants", "farts", "socle", "jinns", "ruing", "slily", "ricer", "hadda", "wowee", "rices", "nerts", "cauls", "swive", "lilty", "micks", "arity", "pasha", "finif", "oinky", "gutty", "tetra", "wises", "wolds", "balds", "picot", "whats", "shiki", "bungs", "snarf", "legos", "dungs", "stogy", "berms", "tangs", "vails", "roods", "morel", "sware", "elans", "latus", "gules", "razer", "doxie", "buena", "overs", "gutta", "zincs", "nates", "kirks", "tikes", "donee", "jerry", "mohel", "ceder", "doges", "unmap", "folia", "rawly", "snark", "topoi", "ceils", "immix", "yores", "diest", "bubba", "pomps", "forky", "turdy", "lawzy", "poohs", "worts", "gloms", "beano", "muley", "barky", "tunny", "auric", "funks", "gaffs", "cordy", "curdy", "lisle", "toric", "soyas", "reman", "mungy", "carpy", "apish", "oaten", "gappy", "aurae", "bract", "rooky", "axled", "burry", "sizer", "proem", "turfy", "impro", "mashy", "miens", "nonny", "olios", "grook", "sates", "agley", "corgi", "dashy", "doser", "dildo", "apsos", "xored", "laker", "playa", "selah", "malty", "dulse", "frigs", "demit", "whoso", "rials", "sawer", "spics", "bedim", "snugs", "fanin", "azoic", "icers", "suers", "wizen", "koine", "topos", "shirr", "rifer", "feral", "laded", "lased", "turds", "swede", "easts", "cozen", "unhit", "pally", "aitch", "sedum", "coper", "ruche", "geeks", "swags", "etext", "algin", "offed", "ninja", "holer", "doter", "toter", "besot", "dicut", "macer", "peens", "pewit", "redox", "poler", "yecch", "fluky", "doeth", "twats", "cruds", "bebug", "bider", "stele", "hexer", "wests", "gluer", "pilau", "abaft", "whelm", "lacer", "inode", "tabus", "gator", "cuing", "refly", "luted", "cukes", "bairn", "bight", "arses", "crump", "loggy", "blini", "spoor", "toyon", "harks", "wazoo", "fenny", "naves", "keyer", "tufas", "morph", "rajas", "typal", "spiff", "oxlip", "unban", "mussy", "finny", "rimer", "login", "molas", "cirri", "huzza", "agone", "unsex", "unwon", "peats", "toile", "zombi", "dewed", "nooky", "alkyl", "ixnay", "dovey", "holey", "cuber", "amyls", "podia", "chino", "apnea", "prims", "lycra", "johns", "primo", "fatwa", "egger", "hempy", "snook", "hying", "fuzed", "barms", "crink", "moots", "yerba", "rhumb", "unarc", "direr", "munge", "eland", "nares", "wrier", "noddy", "atilt", "jukes", "ender", "thens", "unfix", "doggo", "zooks", "diddy", "shmoo", "brusk", "prest", "curer", "pasts", "kelpy", "bocce", "kicky", "taros", "lings", "dicky", "nerdy", "abend", "stela", "biggy", "laved", "baldy", "pubis", "gooks", "wonky", "stied", "hypos", "assed", "spumy", "osier", "roble", "rumba", "biffy", "pupal"]],"words_count":         }
+        ]
+    }
+    "content": "..."
+    }
+    "error": null
+    }
+    "results": [
+    {
+      "url": "https://darkermango.github.io/5-Letter-words/words.json",
+      "title": "words.json",
+      "content": "..."
+    }
+    ]
+    }
+    "error": null
+    }
+</untrusted_tool_result>
