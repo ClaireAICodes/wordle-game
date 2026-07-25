@@ -14890,7 +14890,22 @@ function init() {
     createGrid();
     createKeyboard();
     setupEventListeners();
-    loadRandomPuzzle();
+    
+    // Check for puzzle ID in URL (?puzzle=123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const puzzleParam = urlParams.get('puzzle');
+    
+    if (puzzleParam) {
+        const id = parseInt(puzzleParam);
+        if (id >= 1 && id <= SOLUTIONS.length) {
+            loadPuzzleById(id);
+        } else {
+            loadDailyPuzzle();
+        }
+    } else {
+        loadDailyPuzzle();
+    }
+    
     updateStatsDisplay();
 }
 
@@ -14976,6 +14991,19 @@ function setupEventListeners() {
     puzzleIdInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') idBtn.click();
     });
+}
+
+function getDailyPuzzleIndex() {
+    const epoch = new Date('2021-06-19'); // Wordle #1 launch date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((today - epoch) / (1000 * 60 * 60 * 24));
+    return ((diffDays % SOLUTIONS.length) + SOLUTIONS.length) % SOLUTIONS.length;
+}
+
+function loadDailyPuzzle() {
+    const dailyIndex = getDailyPuzzleIndex();
+    loadPuzzleByIndex(dailyIndex);
 }
 
 function loadRandomPuzzle() {
