@@ -201,6 +201,7 @@ button:not(.primary):not(.share-btn):hover {
     align-items: center;
     gap: 6px;
     margin-top: 16px;
+    padding: 0 16px;
     user-select: none;
 }
 
